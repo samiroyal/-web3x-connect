@@ -54,12 +54,14 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-foreground hover:text-primary transition-colors"
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="border-primary/50 text-primary hover:bg-primary/10 hover:text-primary font-mono text-[10px] px-2 h-8"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+              <Wallet className="w-3 h-3 mr-1" />
+              Connect
+            </Button>
           </div>
         </div>
       </div>

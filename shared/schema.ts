@@ -8,7 +8,7 @@ export const contactSubmissions = pgTable("contact_submissions", {
   projectName: text("project_name").notNull(),
   ecosystem: text("ecosystem").notNull(),
   description: text("description").notNull(),
-  discordHandle: text("discord_handle"),
+  contactInfo: text("contact_info"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

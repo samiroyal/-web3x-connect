@@ -46,7 +46,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 <b>Name:</b> ${input.name}
 <b>Project:</b> ${input.projectName}
 <b>Ecosystem:</b> ${input.ecosystem}
-<b>Discord:</b> ${input.discordHandle || 'N/A'}
+<b>Contact Info:</b> ${input.contactInfo || 'N/A'}
 <b>Description:</b> ${input.description}
       `.trim();
       

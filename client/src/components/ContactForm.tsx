@@ -19,7 +19,7 @@ export function ContactForm() {
       projectName: "",
       ecosystem: "",
       description: "",
-      discordHandle: "",
+      contactInfo: "",
     },
   });
 
@@ -87,12 +87,12 @@ export function ContactForm() {
 
             <FormField
               control={form.control}
-              name="discordHandle"
+              name="contactInfo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discord Handle (Optional)</FormLabel>
+                  <FormLabel>Contact Info (Email, X, Discord)</FormLabel>
                   <FormControl>
-                    <Input placeholder="username#0000" className="bg-background/50 border-white/10 focus:border-primary/50" {...field} />
+                    <Input placeholder="your@email.com or @handle" className="bg-background/50 border-white/10 focus:border-primary/50" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
