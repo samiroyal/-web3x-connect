@@ -47,12 +47,22 @@ export default function Home() {
   ];
 
   const tools = [
-    { name: "Discord", icon: "https://assets-global.website-files.com/6257adef93867e56f84d3092/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" },
-    { name: "Telegram", icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png" },
-    { name: "Twitter / X", icon: "https://abs.twimg.com/responsive-web/client-web/icon-ios.b1fc7275.png" },
-    { name: "Notion", icon: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" },
-    { name: "Snapshot", icon: "https://pbs.twimg.com/profile_images/1626925585501814787/1FzbIq0D_400x400.jpg" },
-    { name: "Guild", icon: "https://guild.xyz/guild-icon.png" },
+    { 
+      name: "X (Twitter)", 
+      icon: "https://abs.twimg.com/responsive-web/client-web/icon-ios.b1fc7275.png",
+      url: "https://x.com/JSB_Web3X"
+    },
+    { 
+      name: "Discord", 
+      icon: "https://assets-global.website-files.com/6257adef93867e56f84d3092/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png",
+      url: "#",
+      username: "JSB_Web3X"
+    },
+    { 
+      name: "Telegram", 
+      icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png",
+      url: "https://t.me/JSB_Web3X"
+    },
   ];
 
   return (
@@ -216,13 +226,26 @@ export default function Home() {
           </h2>
           <div className="flex flex-wrap justify-center gap-8 md:gap-16 items-center opacity-70">
             {tools.map((tool) => (
-              <div key={tool.name} className="flex flex-col items-center gap-3 group">
+              <a
+                key={tool.name}
+                href={tool.url}
+                target={tool.url === "#" ? undefined : "_blank"}
+                rel={tool.url === "#" ? undefined : "noopener noreferrer"}
+                className="flex flex-col items-center gap-3 group transition-transform hover:scale-105"
+                onClick={(e) => {
+                  if (tool.url === "#") {
+                    e.preventDefault();
+                    navigator.clipboard.writeText(tool.username!);
+                    alert(`Discord username ${tool.username} copied to clipboard!`);
+                  }
+                }}
+              >
                 <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center p-3 group-hover:bg-white/10 transition-colors">
-                  {/* Using descriptive comments for dynamic images in production, placeholder styling here */}
                   <img src={tool.icon} alt={tool.name} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-300" />
                 </div>
                 <span className="text-sm font-medium">{tool.name}</span>
-              </div>
+                {tool.username && <span className="text-xs text-muted-foreground -mt-2">{tool.username}</span>}
+              </a>
             ))}
           </div>
         </div>
