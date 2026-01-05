@@ -66,35 +66,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-b border-white/5 overflow-hidden"
-          >
-            <div className="px-4 pt-2 pb-6 space-y-2">
-              {navLinks.map((link) => (
-                <button
-                  key={link.name}
-                  onClick={() => handleScroll(link.href)}
-                  className="block w-full text-left px-3 py-3 text-base font-medium text-foreground hover:bg-white/5 hover:text-primary rounded-md transition-colors"
-                >
-                  {link.name}
-                </button>
-              ))}
-              <div className="pt-4 px-3">
-                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Wallet className="w-4 h-4 mr-2" />
-                  Connect Wallet
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </nav>
   );
 }
