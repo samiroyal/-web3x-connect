@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { ServiceCard } from "@/components/ServiceCard";
 import { CaseStudyCard } from "@/components/CaseStudyCard";
-import { ContactForm } from "@/components/ContactForm";
+import ContactForm from "@/components/ContactForm";
 import { Button } from "@/components/ui/button";
 import { 
   Users, 

@@ -1,41 +1,34 @@
-import { useMutation } from "@tanstack/react-query";
-import { api, type InsertContactSubmission } from "@shared/routes";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
-export function useSubmitContact() {
-  const { toast } = useToast();
+export function useContact() {
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  return useMutation({
-    mutationFn: async (data: InsertContactSubmission) => {
-      const res = await fetch(api.contact.submit.path, {
-        method: api.contact.submit.method,
-        headers: { "Content-Type": "application/json" },
+  async function submit(data: any) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
 
       if (!res.ok) {
-        if (res.status === 400) {
-          const error = await res.json();
-          throw new Error(error.message || "Validation failed");
-        }
-        throw new Error("Failed to submit form");
+        throw new Error("Failed to submit");
       }
 
-      return api.contact.submit.responses[201].parse(await res.json());
-    },
-    onSuccess: () => {
-      toast({
-        title: "Message Sent",
-        description: "Your message has been received. I'll get back to you shortly.",
-        variant: "default",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+      setSuccess(true);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return { submit, loading, success, error };
 }

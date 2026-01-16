@@ -1,143 +1,86 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { insertContactSchema } from "@shared/routes";
-import { useSubmitContact } from "@/hooks/use-contact";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Loader2, Send } from "lucide-react";
-import type { z } from "zod";
+import { useState } from "react";
+import { useContact } from "@/hooks/use-contact";
 
-export function ContactForm() {
-  const mutation = useSubmitContact();
+export default function ContactForm() {
+  const { submit, loading, success, error } = useContact();
 
-  const form = useForm<z.infer<typeof insertContactSchema>>({
-    resolver: zodResolver(insertContactSchema),
-    defaultValues: {
-      name: "",
-      projectName: "",
-      ecosystem: "",
-      description: "",
-      contactInfo: "",
-    },
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    message: "",
   });
 
-  function onSubmit(data: z.infer<typeof insertContactSchema>) {
-    mutation.mutate(data, {
-      onSuccess: () => form.reset(),
-    });
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    submit(form);
   }
 
   return (
     <div className="bg-secondary/30 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8">
-      <div className="mb-8">
-        <h3 className="text-2xl font-display font-bold mb-2">
-          Let's Build Your Community
-        </h3>
-        <p className="text-muted-foreground">
-          Tell me about your project and where you need help.
-        </p>
-      </div>
+      <h3 className="text-2xl font-display font-bold mb-2">
+        Let’s Build Your Community
+      </h3>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Your Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <p className="text-muted-foreground mb-6">
+        Reach out and we’ll get back to you shortly.
+      </p>
 
-            <FormField
-              control={form.control}
-              name="projectName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Project Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          name="name"
+          placeholder="Your name"
+          value={form.name}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-secondary/40 border border-white/10 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="ecosystem"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ecosystem</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <input
+          name="email"
+          type="email"
+          placeholder="Your email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          className="w-full rounded-lg bg-secondary/40 border border-white/10 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
 
-            <FormField
-              control={form.control}
-              name="contactInfo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Info</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+        <textarea
+          name="message"
+          placeholder="Your message"
+          value={form.message}
+          onChange={handleChange}
+          required
+          rows={4}
+          className="w-full rounded-lg bg-secondary/40 border border-white/10 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
 
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project Description</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-lg bg-primary text-primary-foreground py-3 font-semibold hover:opacity-90 transition disabled:opacity-50"
+        >
+          {loading ? "Sending..." : "Send Message"}
+        </button>
 
-          <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              <>
-                <Send className="mr-2 h-4 w-4" />
-                Submit Request
-              </>
-            )}
-          </Button>
-        </form>
-      </Form>
+        {success && (
+          <p className="text-green-400 text-sm">
+            Message sent successfully!
+          </p>
+        )}
+
+        {error && (
+          <p className="text-red-400 text-sm">
+            Something went wrong. Please try again.
+          </p>
+        )}
+      </form>
     </div>
   );
 }
