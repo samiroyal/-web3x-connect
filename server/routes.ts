@@ -4,62 +4,85 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 
+/* =========================
+   Telegram helper
+========================= */
 async function sendTelegramMessage(message: string) {
+  console.log("sendTelegramMessage CALLED");
+
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
-  
+
   if (!token || !chatId) {
     console.error("Telegram credentials missing");
     return;
   }
 
   try {
-    const url = `https://api.telegram.org/bot${token}/sendMessage`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        parse_mode: 'HTML'
-      })
-    });
-    
+    const response = await fetch(
+      `https://api.telegram.org/bot${token}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: "HTML",
+        }),
+      }
+    );
+
     if (!response.ok) {
-      const error = await response.text();
-      console.error("Telegram API error:", error);
+      console.error("Telegram API error:", await response.text());
     }
   } catch (err) {
     console.error("Failed to send Telegram message:", err);
   }
 }
 
-export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+/* =========================
+   Route registration
+========================= */
+export async function registerRoutes(
+  httpServer: Server,
+  app: Express
+): Promise<Server> {
+
+  /* ---------- Health check ---------- */
+  
+
+  /* ---------- Contact form ---------- */
   app.post(api.contact.submit.path, async (req, res) => {
+    console.log("🔥 CONTACT ROUTE HIT");
+    console.log("BODY:", req.body);
+
     try {
       const input = api.contact.submit.input.parse(req.body);
+
       const result = await storage.createContactSubmission(input);
-      
-      // Send Telegram notification
+
       const telegramMessage = `
 <b>New Contact Submission</b>
 <b>Name:</b> ${input.name}
 <b>Project:</b> ${input.projectName}
 <b>Ecosystem:</b> ${input.ecosystem}
-<b>Contact Info:</b> ${input.contactInfo || 'N/A'}
+<b>Contact Info:</b> ${input.contactInfo || "N/A"}
 <b>Description:</b> ${input.description}
       `.trim();
-      
+
       await sendTelegramMessage(telegramMessage);
-      
+
       res.status(201).json(result);
     } catch (err) {
+      console.error("❌ CONTACT ERROR:", err);
+
       if (err instanceof z.ZodError) {
         return res.status(400).json({
           message: err.errors[0].message,
-          field: err.errors[0].path.join('.'),
+          field: err.errors[0].path.join("."),
         });
       }
+
       res.status(500).json({ message: "Internal Server Error" });
     }
   });

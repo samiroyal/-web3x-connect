@@ -1,7 +1,17 @@
+import "dotenv/config";
+console.log("ENV CHECK", {
+  DB_HOST: process.env.DB_HOST,
+  DB_USER: process.env.DB_USER,
+  DB_NAME: process.env.DB_NAME,
+  HAS_PASSWORD: !!process.env.DB_PASSWORD,
+});
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+
+
 
 const app = express();
 const httpServer = createServer(app);
@@ -13,13 +23,7 @@ declare module "http" {
 }
 
 app.use(
-  express.json({
-    verify: (req, _res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
-);
-
+  express.json());
 app.use(express.urlencoded({ extended: false }));
 
 export function log(message: string, source = "express") {
@@ -61,6 +65,10 @@ app.use((req, res, next) => {
 
 (async () => {
   await registerRoutes(httpServer, app);
+  app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+});
+
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -85,14 +93,12 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+  app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+});
+ httpServer.listen(port, "127.0.0.1", () => {
+  log(`serving on http://127.0.0.1:${port}`);
+});
+
+
 })();

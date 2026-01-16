@@ -17,7 +17,7 @@ export const api = {
   contact: {
     submit: {
       method: 'POST' as const,
-      path: '/api/contact',
+      path: "/api/contact",
       input: insertContactSchema,
       responses: {
         201: z.custom<typeof contactSubmissions.$inferSelect>(),
